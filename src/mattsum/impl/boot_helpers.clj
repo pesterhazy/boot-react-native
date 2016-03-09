@@ -203,15 +203,22 @@
 (defn copy-file [source-path dest-path]
   (clojure.java.io/copy (clojure.java.io/file source-path) (clojure.java.io/file dest-path)))
 
-(defn bundle* [in outf outd transformer-abs-path]
+(defn bundle* [in outf outd]
   (let [tempfname (str "nested/temp/" (java.util.UUID/randomUUID) ".js")
         temppath (str "app/" tempfname)
         tempdirf (->> temppath clojure.java.io/as-file .getParentFile)
+
+        tempfname2 (str "nested/temp/" (java.util.UUID/randomUUID) ".js")
+        temppath2 (str "app/" tempfname2)
+
         cli (-> "app/node_modules/react-native/local-cli/cli.js"
                 java.io.File.
                 .getAbsolutePath)
         dir (-> in .getAbsoluteFile .getParent)
         fname (-> in .getAbsolutePath)]
+    (util/dbug "Using packager path %s...\n" temppath2)
+    (spit temppath2 (read-resource "mattsum/boot_rn/js/cljs-rn-transformer.js"))
+
     (util/info "Bundling %s...\n" fname)
     ;; create nested temp directory
     ;; we need this in order to keep the react packager happy
@@ -222,7 +229,7 @@
       (try
         (let [cmd ["node" cli
                    "bundle" "--platform" "ios"
-                   "--transformer" transformer-abs-path
+                   "--transformer" (-> temppath2 clojure.java.io/as-file .getAbsolutePath)
                    "--dev" "true"
                    "--entry-file" tempfname
                    "--bundle-output" (.getAbsolutePath outf)
