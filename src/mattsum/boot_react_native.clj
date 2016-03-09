@@ -285,11 +285,19 @@ require('" boot-main "');
 (deftask bundle
   "Bundle the files specified"
   [f files ORIGIN:TARGET {str str} "{origin target} pair of files to bundle"]
-  (let  [tmp (c/tmp-dir!)]
+  (let  [tmp (c/tmp-dir!)
+         transformer-rel-path "transformer/cljs-rn-transformer.js"
+         transformer-path (bh/write-resource-to-path
+                           "mattsum/boot_rn/js/cljs-rn-transformer.js"
+                           transformer-rel-path)]
     (c/with-pre-wrap fileset
-      (doseq [[origin target] files]
-        (let [in  (bh/file-by-path origin fileset)
-              out (clojure.java.io/file tmp target)]
-          (clojure.java.io/make-parents out)
-          (bh/bundle* in out tmp)))
-      (-> fileset (c/add-resource tmp) c/commit!))))
+      (let [fileset (-> fileset
+                        (c/add-resource transformer-path)
+                        (c/commit!))
+            transformer-abs-path (str (.getAbsolutePath transformer-path) "/" transformer-rel-path)]
+        (doseq [[origin target] files]
+          (let [in  (bh/file-by-path origin fileset)
+                out (clojure.java.io/file tmp target)]
+            (clojure.java.io/make-parents out)
+            (bh/bundle* in out tmp transformer-abs-path)))
+        (-> fileset (c/add-resource tmp) c/commit!)))))

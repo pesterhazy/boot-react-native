@@ -203,7 +203,7 @@
 (defn copy-file [source-path dest-path]
   (clojure.java.io/copy (clojure.java.io/file source-path) (clojure.java.io/file dest-path)))
 
-(defn bundle* [in outf outd]
+(defn bundle* [in outf outd transformer-abs-path]
   (let [tempfname (str "nested/temp/" (java.util.UUID/randomUUID) ".js")
         temppath (str "app/" tempfname)
         tempdirf (->> temppath clojure.java.io/as-file .getParentFile)
@@ -220,12 +220,15 @@
     (copy-file fname temppath)
     (binding [util/*sh-dir* "app"]
       (try
-        (util/dosh "node" cli
+        (let [cmd ["node" cli
                    "bundle" "--platform" "ios"
+                   "--transformer" transformer-abs-path
                    "--dev" "true"
                    "--entry-file" tempfname
                    "--bundle-output" (.getAbsolutePath outf)
-                   "--assets-dest" (.getAbsolutePath outd))
+                   "--assets-dest" (.getAbsolutePath outd)]]
+          (util/dbug "Packager command: %s\n" (pr-str cmd))
+          (apply util/dosh cmd))
         (finally
           (util/dosh "rm" "-f" tempfname))))))
 
