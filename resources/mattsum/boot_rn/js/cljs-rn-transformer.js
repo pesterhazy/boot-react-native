@@ -15,7 +15,7 @@ const transformer = require('../../node_modules/react-native/packager/transforme
 
 function transform(src, filename, options) {
     if ((filename.indexOf('/build/') > -1) ||
-        (filename.indexOf('nested/temp'))){
+        (filename.indexOf('nested/temp') > -1)){
         return { code: src,
                  map: filename + ".map" };
     };
