@@ -28,16 +28,16 @@
                   :font-size 24
                   :text-align "center"
                   }}
-    "Clojure Berlin Demo"]
-   #_[view {:style {:background-color :red :height 100}}]
-   #_[image {:style {:width 380 :height 380}
-             :source {:uri "http://photos1.meetupstatic.com/photos/event/1/e/3/6/highres_438427734.jpeg"}}]
-   #_[input {:style {:height 40 :width 300
-                     :margin-left 20}
-             :on-change-text (fn [v] (prn v))
-             :background-color "pink"
-             :placeholder "potatoes"
-             :default-value "potatoes"}]
+    "Clojure Berlin Demo !!!"]
+   [view {:style {:background-color "#AEC8DA" :height 100}}]
+   [image {:style {:width 380 :height 380}
+           :source {:uri "http://photos1.meetupstatic.com/photos/event/1/e/3/6/highres_438427734.jpeg"}}]
+   [input {:style {:height 40 :width 300
+                   :margin-left 20}
+           :on-change-text (fn [v] (prn adv))
+           :background-color "#F2F9FD"
+           :placeholder "potatoes"
+           :default-value "potatoes"}]
    ])
 
 (defn mount-root []
@@ -51,11 +51,11 @@
                       "SimpleExampleApp"
                       #(reag/reactify-component root-view)))
 
-(test/deftest testingt
-  (test/is (= 1 2) "ERROR"))
+#_(test/deftest testingt
+    (test/is (= 1 2) "ERROR"))
 
 (defn on-js-reload
   []
-  (test/run-tests)
+  #_(test/run-tests)
   (js/console.log "JS RELOADING")
   (mount-root))

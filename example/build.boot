@@ -52,6 +52,7 @@
    (rn/after-cljsbuild :server-url "localhost:8081")
    (if (= :ios platform) (rn/print-ios-log :grep "SimpleExampleApp") identity)
    (if (= :android platform) (rn/print-android-log) identity)
+   (speak)
    (target :dir ["app/build"])))
 
 (deftask dev
